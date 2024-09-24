@@ -43,6 +43,8 @@ return new class extends Migration
             $table->string('product_template_active')->nullable();
             $table->string('product_template_kfa_code')->nullable();
             $table->string('product_template_display_name')->nullable();
+            $table->json('active_ingredients')->nullable();
+            
             $table->timestamps();
         });
     }

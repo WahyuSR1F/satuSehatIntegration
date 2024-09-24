@@ -21,8 +21,9 @@ class KfaController extends Controller
     {
         //get jumlah terahkir
         $lastesJumlah = $this->getLastest();
+       
 
-        $indexs = $this->createIndexs($jumlah = 0, $size = 1000);
+        $indexs = $this->createIndexs($jumlah = 0, $size = 3000);
 
         $tokenAccess = (new TokenAccessContorller())->getToken();
         $tokenAccess = $tokenAccess->getData();
@@ -31,7 +32,7 @@ class KfaController extends Controller
         $response = $this->Api($this->url, $tokenAccess->data->token, $indexs->id, $size, $product_type);
         $data = ($response->getData())->items->data;
 
-        // Proses data dalam chunk untuk efisiensi
+        //Proses data dalam chunk untuk efisiensi
         collect($data)->chunk(100)->each(function ($chunk) {
             foreach ($chunk as $obat) {
                 $this->CreateKFA($obat);
@@ -40,7 +41,8 @@ class KfaController extends Controller
 
         // Tambahkan data baru ke createIndexs dan perbarui jumlah kumulatif
         $jumlah = count($data);
-        $total = $lastesJumlah ? $lastesJumlah->jumlah : 0 + $jumlah;
+       
+        $total =($lastesJumlah ? $lastesJumlah->jumlah : 0)+ $jumlah;
 
         $this->updateIndeks($total, $indexs->id);
     }
@@ -52,6 +54,22 @@ class KfaController extends Controller
             'page' => $page, // Add page input
             'size' => $size, // Add size input
             'product_type' => $product_type, // Add product_type input
+        ]);
+
+
+
+        $response = json_decode($response->body());
+        return response()->json($response);
+    }
+
+
+    public function ApiDetail($url, $bearer_token,  $code)
+    {
+        $response = Http::asForm()->withHeaders([
+            'Authorization' => 'Bearer ' . $bearer_token,
+        ])->get($url . '/kfa-v2/products', [
+            'identifier' => 'kfa',
+            'code' => $code 
         ]);
 
 
@@ -99,6 +117,9 @@ class KfaController extends Controller
                 'product_template_active' => $obat->product_template->active,
                 'product_template_kfa_code' => $obat->product_template->kfa_code,
                 'product_template_display_name' => $obat->product_template->display_name,
+                'ing'
+
+
             ]);
         }
     }
@@ -136,10 +157,61 @@ class KfaController extends Controller
         $tokenAccess = $tokenAccess->getData();
 
         $product_type = 'farmasi';
-        $response = $this->Api($this->url, $tokenAccess->data->token, 2, 1000, $product_type);
+        $response = $this->Api($this->url, $tokenAccess->data->token, 2, 10, $product_type);
+        dd($response);
         $data = ($response->getData())->items->data;
 
-        // Proses data dalam chunk untuk efisiensi
         return response()->json($data);
     }
+
+    // public function getDetailProductPaginateTest()
+    // {
+    //     // Tambahkan waktu eksekusi menjadi 300 detik
+    //     set_time_limit(10000);
+    
+    //     KFA::where('id', '>=', 2077)->chunk(500, function ($items) {
+    //         foreach ($items as $item) {
+    //             // Dapatkan token untuk setiap batch
+    //             $tokenAccess = (new TokenAccessContorller())->getToken();
+    //             $tokenAccess = $tokenAccess->getData();
+        
+    //             // Ambil detail dari API
+    //             $response = $this->ApiDetail($this->url, $tokenAccess->data->token, $item->kfa_code);
+                
+    //             $result = ($response->getData())->result;
+    //             if($result){
+    //                 $result = json_encode($result->active_ingredients); // Konversi ke JSON
+    //                 KFA::where('kfa_code', $item->kfa_code)->update(['active_ingredients' => $result]);
+    //             }
+              
+        
+    //             // Update database untuk setiap item
+                
+               
+    //         }
+    //     });
+    
+    //     return response()->json("finish");
+    // }
+
+    public function getDetailProductPaginateTestAplication()
+    {
+        // Tambahkan waktu eksekusi menjadi 300 detik
+                $tokenAccess = (new TokenAccessContorller())->getToken();
+                $tokenAccess = $tokenAccess->getData();
+        
+                // Ambil detail dari API
+                $response = $this->ApiDetail($this->url, $tokenAccess->data->token, '93021994');
+                $response = $response->getData();
+                dd($response);  
+                
+        
+                // Update database untuk setiap item
+                
+    
+        return response()->json($response);
+    }
+
+
+    
 }

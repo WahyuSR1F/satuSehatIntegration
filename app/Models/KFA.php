@@ -41,5 +41,6 @@ class KFA extends Model
         'product_template_active',
         'product_template_kfa_code',
         'product_template_display_name',
+        'active_ingredients'
     ];
 }
