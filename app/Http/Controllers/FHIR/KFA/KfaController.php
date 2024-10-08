@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\KFA;
+namespace App\Http\Controllers\FHIR\KFA;
 
 use App\Models\KFA;
 use Illuminate\Http\Request;

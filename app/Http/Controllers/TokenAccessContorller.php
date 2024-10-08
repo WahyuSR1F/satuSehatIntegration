@@ -65,6 +65,7 @@ class TokenAccessContorller extends Controller
             return response()->json(['status' => 'berhasil', 'message' => 'token masih berlum expired', 'data' =>  $data, 'present_time' => $this->presentTime]);
         }
     }
+ 
 
     protected function Api($url, $client_id, $client_secret)
     {

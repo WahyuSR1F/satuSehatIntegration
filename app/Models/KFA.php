@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class KFA extends Model
 {
     use HasFactory;
-    protected $table = 'kfa_backup';
+    protected $table = 'master_kfa';
 
     protected $fillable = [
         'kfa_code',
@@ -19,6 +19,7 @@ class KFA extends Model
         'farmalkes_type_group',
         'dosage_form_code',
         'dosage_form_name',
+        'dosage_form_system',
         'produksi_buatan',
         'nie',
         'nama_dagang',
